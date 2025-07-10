@@ -11,23 +11,24 @@ import { Dashboard } from '@/components/Dashboard';
 function AppContent() {
   const { state, dispatch } = useApp();
 
-  useEffect(() => {
-    // Check if user has completed onboarding
-    const savedUser = localStorage.getItem('user');
-    const savedTasks = localStorage.getItem('tasks');
-    
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      dispatch({ type: 'SET_USER', payload: user });
-      
-      if (savedTasks) {
-        const tasks = JSON.parse(savedTasks);
-        dispatch({ type: 'SET_TASKS', payload: tasks });
-      }
-      
-      dispatch({ type: 'SET_CURRENT_STEP', payload: 'dashboard' });
-    }
-  }, [dispatch]);
+  // Remove the auto-skip logic - always start at welcome
+  // useEffect(() => {
+  //   // Check if user has completed onboarding
+  //   const savedUser = localStorage.getItem('user');
+  //   const savedTasks = localStorage.getItem('tasks');
+  //   
+  //   if (savedUser) {
+  //     const user = JSON.parse(savedUser);
+  //     dispatch({ type: 'SET_USER', payload: user });
+  //     
+  //     if (savedTasks) {
+  //       const tasks = JSON.parse(savedTasks);
+  //       dispatch({ type: 'SET_TASKS', payload: tasks });
+  //     }
+  //     
+  //     dispatch({ type: 'SET_CURRENT_STEP', payload: 'dashboard' });
+  //   }
+  // }, [dispatch]);
 
   const renderCurrentStep = () => {
     switch (state.currentStep) {
