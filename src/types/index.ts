@@ -5,6 +5,10 @@ export interface User {
   email: string;
   bedtime: string;
   wakeTime: string;
+  location: string;
+  nationality: string;
+  hobbies: string;
+  occupation: string;
   goals: string[];
   onboardingComplete: boolean;
 }
@@ -34,5 +38,9 @@ export interface OnboardingData {
   email: string;
   bedtime: string;
   wakeTime: string;
+  location: string;
+  nationality: string;
+  hobbies: string;
+  occupation: string;
   goals: string[];
 }

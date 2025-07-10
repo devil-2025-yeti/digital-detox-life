@@ -30,15 +30,22 @@ export function Dashboard() {
     ? Math.round((completedTasks.length / state.tasks.length) * 100) 
     : 0;
 
+  // Sort pending tasks by priority: High -> Medium -> Low
   const sortedPendingTasks = pendingTasks.sort((a, b) => {
+    const priorityOrder = { 'High': 0, 'Medium': 1, 'Low': 2 };
+    return priorityOrder[a.priority] - priorityOrder[b.priority];
+  });
+
+  // Sort completed tasks by priority as well
+  const sortedCompletedTasks = completedTasks.sort((a, b) => {
     const priorityOrder = { 'High': 0, 'Medium': 1, 'Low': 2 };
     return priorityOrder[a.priority] - priorityOrder[b.priority];
   });
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'High': return 'bg-purple-100 text-purple-700 border-purple-200';
-      case 'Medium': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'High': return 'bg-red-100 text-red-700 border-red-200';
+      case 'Medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
       case 'Low': return 'bg-green-100 text-green-700 border-green-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
@@ -46,7 +53,7 @@ export function Dashboard() {
 
   if (showCelebration) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-purple-500 to-blue-600">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-primary to-tree-600">
         <div className="text-center text-white animate-fade-in">
           <div className="mb-8">
             {[...Array(12)].map((_, i) => (
@@ -87,7 +94,7 @@ export function Dashboard() {
         <Card className="p-6 mb-6 animate-slide-up glass-effect">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-800">Your Progress</h2>
-            <span className="text-2xl font-bold text-purple-600">
+            <span className="text-2xl font-bold text-primary">
               {progressPercentage}%
             </span>
           </div>
@@ -103,7 +110,7 @@ export function Dashboard() {
         {/* Motivational Quote */}
         <Card className="p-6 mb-6 animate-slide-up glass-effect">
           <div className="flex items-start space-x-3">
-            <Quote className="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
+            <Quote className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
             <p className="text-gray-700 italic leading-relaxed">
               "{quote}"
             </p>
@@ -114,7 +121,7 @@ export function Dashboard() {
         <div className="mb-6">
           <Button
             onClick={() => setShowAddTask(true)}
-            className="w-full rounded-2xl py-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+            className="w-full rounded-2xl py-6 bg-gradient-to-r from-primary to-tree-600 hover:from-primary/90 hover:to-tree-700 transition-all duration-300"
           >
             <Plus className="w-5 h-5 mr-2" />
             Add New Task
@@ -142,14 +149,14 @@ export function Dashboard() {
         )}
 
         {/* Completed Tasks */}
-        {completedTasks.length > 0 && (
+        {sortedCompletedTasks.length > 0 && (
           <div>
             <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Completed ({completedTasks.length})
+              Completed ({sortedCompletedTasks.length})
             </h3>
             
             <div className="space-y-4">
-              {completedTasks.map((task, index) => (
+              {sortedCompletedTasks.map((task, index) => (
                 <TaskCard 
                   key={task.id} 
                   task={task} 
@@ -176,10 +183,24 @@ function TaskCard({ task, index, getPriorityColor, isCompleted = false }: any) {
 
   const handleToggleComplete = () => {
     dispatch({ type: 'TOGGLE_TASK_COMPLETE', payload: task.id });
+    
+    // Update localStorage
+    const currentTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+    const updatedTasks = currentTasks.map((t: any) => 
+      t.id === task.id ? { ...t, completed: !t.completed } : t
+    );
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   };
 
   const handleDelete = () => {
-    dispatch({ type: 'DELETE_TASK', payload: task.id });
+    if (confirm('Are you sure you want to delete this task?')) {
+      dispatch({ type: 'DELETE_TASK', payload: task.id });
+      
+      // Update localStorage
+      const currentTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+      const updatedTasks = currentTasks.filter((t: any) => t.id !== task.id);
+      localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    }
   };
 
   return (
@@ -195,7 +216,7 @@ function TaskCard({ task, index, getPriorityColor, isCompleted = false }: any) {
           className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
             isCompleted 
               ? 'bg-green-600 border-green-600' 
-              : 'border-gray-300 hover:border-purple-400'
+              : 'border-gray-300 hover:border-primary'
           }`}
         >
           {isCompleted && <Check className="w-4 h-4 text-white" />}
@@ -213,6 +234,15 @@ function TaskCard({ task, index, getPriorityColor, isCompleted = false }: any) {
               <Badge className={getPriorityColor(task.priority)}>
                 {task.priority}
               </Badge>
+              
+              {!isCompleted && (
+                <button
+                  onClick={() => {/* TODO: Implement edit functionality */}}
+                  className="p-1 text-gray-400 hover:text-primary transition-colors"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+              )}
               
               <button
                 onClick={handleDelete}

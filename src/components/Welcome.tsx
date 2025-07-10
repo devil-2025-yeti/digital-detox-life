@@ -15,11 +15,11 @@ export function Welcome() {
       <div className="max-w-md w-full text-center animate-fade-in">
         <div className="mb-8">
           <div className="w-20 h-20 mx-auto mb-6 rounded-full focus-gradient flex items-center justify-center animate-gentle-bounce">
-            <Sparkles className="w-10 h-10 text-purple-600" />
+            <Sparkles className="w-10 h-10 text-primary" />
           </div>
           
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            FocusFlow
+            Detach
           </h1>
           
           <p className="text-lg text-gray-600 leading-relaxed">
@@ -29,8 +29,8 @@ export function Welcome() {
 
         <div className="space-y-6 mb-8">
           <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/60 backdrop-blur-sm">
-            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-              <Target className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Target className="w-6 h-6 text-primary" />
             </div>
             <div className="text-left">
               <h3 className="font-semibold text-gray-800">Smart Goal Setting</h3>
@@ -39,8 +39,8 @@ export function Welcome() {
           </div>
 
           <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/60 backdrop-blur-sm">
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <Heart className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Heart className="w-6 h-6 text-primary" />
             </div>
             <div className="text-left">
               <h3 className="font-semibold text-gray-800">Digital Wellness</h3>
@@ -52,7 +52,7 @@ export function Welcome() {
         <Button 
           onClick={handleGetStarted}
           size="lg"
-          className="w-full rounded-2xl py-6 text-lg font-medium bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-[1.02]"
+          className="w-full rounded-2xl py-6 text-lg font-medium bg-gradient-to-r from-primary to-tree-600 hover:from-primary/90 hover:to-tree-700 transition-all duration-300 transform hover:scale-[1.02]"
         >
           Begin Your Journey
         </Button>
