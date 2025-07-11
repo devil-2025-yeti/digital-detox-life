@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Check, Edit, Trash2, Calendar, Quote, Menu, Smartphone } from 'lucide-react';
+import { Plus, Check, Edit, Trash2, Calendar, Quote, Menu } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { getMotivationalQuote } from '@/utils/aiTaskGenerator';
 import { AddTaskDialog } from './AddTaskDialog';
@@ -15,7 +15,7 @@ import { ScreenTime } from './ScreenTime';
 import { Task } from '@/types';
 
 export function Dashboard() {
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
   const [showCelebration, setShowCelebration] = useState(false);
   const [quote, setQuote] = useState('');
   const [showAddTask, setShowAddTask] = useState(false);
@@ -27,7 +27,7 @@ export function Dashboard() {
     // Load user data from localStorage on mount
     const savedUser = localStorage.getItem('user');
     const savedTasks = localStorage.getItem('tasks');
-    const hasVisitedDashboard = localStorage.getItem('hasVisitedDashboard');
+    const hasSeenCelebration = localStorage.getItem('hasSeenCelebration');
     
     if (savedUser && !state.user) {
       const user = JSON.parse(savedUser);
@@ -39,22 +39,24 @@ export function Dashboard() {
       dispatch({ type: 'SET_TASKS', payload: tasks });
     }
 
-    // Only show celebration animation for first-time visitors to dashboard
-    if (!hasVisitedDashboard && state.user && state.tasks.length > 0) {
+    // Show celebration only if:
+    // 1. User has not seen celebration before
+    // 2. User exists and has tasks
+    // 3. This is their first visit to dashboard after creating tasks
+    if (!hasSeenCelebration && state.user && state.tasks.length > 0) {
       setShowCelebration(true);
       setQuote(getMotivationalQuote());
       
-      // Mark that user has visited dashboard
-      localStorage.setItem('hasVisitedDashboard', 'true');
+      // Mark that user has seen the celebration
+      localStorage.setItem('hasSeenCelebration', 'true');
       
       const timer = setTimeout(() => setShowCelebration(false), 3000);
       return () => clearTimeout(timer);
     } else {
       setQuote(getMotivationalQuote());
     }
-  }, [state.user, state.tasks]);
+  }, [state.user, state.tasks.length, dispatch]);
 
-  const { dispatch } = useApp();
   const completedTasks = state.tasks.filter(task => task.completed);
   const pendingTasks = state.tasks.filter(task => !task.completed);
   const progressPercentage = state.tasks.length > 0 
@@ -139,8 +141,12 @@ export function Dashboard() {
                 <Menu className="w-5 h-5" />
               </Button>
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-tree-600 rounded-lg flex items-center justify-center">
-                  <Smartphone className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/0cebede7-411c-44f1-a1fa-8c5578b235f1.png" 
+                    alt="Detach Logo" 
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div>
                   <h1 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">

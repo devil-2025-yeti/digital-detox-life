@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { User, Bell, LogOut, Menu, X, Home, Smartphone } from 'lucide-react';
+import { User, Bell, LogOut, Menu, X, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useApp } from '@/contexts/AppContext';
@@ -59,8 +59,12 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/20">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-tree-600 rounded-lg flex items-center justify-center">
-                <Smartphone className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
+                <img 
+                  src="/lovable-uploads/0cebede7-411c-44f1-a1fa-8c5578b235f1.png" 
+                  alt="Detach Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <h2 className="text-xl font-bold text-primary">Detach</h2>
             </div>
