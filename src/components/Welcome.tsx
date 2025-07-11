@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Sparkles, Target, Heart } from 'lucide-react';
+import { Target, Heart } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 
 export function Welcome() {
@@ -15,7 +15,11 @@ export function Welcome() {
       <div className="max-w-md w-full text-center animate-fade-in">
         <div className="mb-8">
           <div className="w-20 h-20 mx-auto mb-6 rounded-full focus-gradient flex items-center justify-center animate-gentle-bounce">
-            <Sparkles className="w-10 h-10 text-primary" />
+            <img 
+              src="/lovable-uploads/c2a19e91-9808-422f-83f9-1f1157bc4bdf.png" 
+              alt="Detach Logo" 
+              className="w-12 h-12 object-contain"
+            />
           </div>
           
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
