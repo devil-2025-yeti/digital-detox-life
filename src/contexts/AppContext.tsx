@@ -9,6 +9,7 @@ interface AppContextType {
 
 type AppAction =
   | { type: 'SET_USER'; payload: User }
+  | { type: 'UPDATE_USER'; payload: User }
   | { type: 'SET_CURRENT_STEP'; payload: AppState['currentStep'] }
   | { type: 'SET_TASKS'; payload: Task[] }
   | { type: 'SET_AI_SUGGESTED_TASKS'; payload: Task[] }
@@ -16,7 +17,8 @@ type AppAction =
   | { type: 'UPDATE_TASK'; payload: { id: string; updates: Partial<Task> } }
   | { type: 'DELETE_TASK'; payload: string }
   | { type: 'TOGGLE_TASK_COMPLETE'; payload: string }
-  | { type: 'SET_LOADING'; payload: boolean };
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'LOGOUT' };
 
 const initialState: AppState = {
   user: null,
@@ -30,6 +32,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case 'SET_USER':
       return { ...state, user: action.payload };
+    case 'UPDATE_USER':
+      return { ...state, user: action.payload };
+    case 'LOGOUT':
+      return { ...initialState };
     case 'SET_CURRENT_STEP':
       return { ...state, currentStep: action.payload };
     case 'SET_TASKS':

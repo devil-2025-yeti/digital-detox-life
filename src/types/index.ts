@@ -10,6 +10,7 @@ export interface User {
   hobbies: string;
   occupation: string;
   goals: string[];
+  focusArea?: string;
   onboardingComplete: boolean;
 }
 

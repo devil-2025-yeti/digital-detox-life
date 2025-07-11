@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/sonner';
 import Index from './pages/Index';
 import { Profile } from './components/Profile';
 import { Notifications } from './components/Notifications';
-import { NotFound } from './pages/NotFound';
+import NotFound from './pages/NotFound';
 import './App.css';
 
 function App() {
