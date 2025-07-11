@@ -1,10 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Bell, Clock, Target, Quote, Menu } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
-import { useNavigate } from 'react-router-dom';
 import { AppSidebar } from './AppSidebar';
 
 interface Notification {
@@ -17,7 +17,6 @@ interface Notification {
 
 export function Notifications() {
   const { state } = useApp();
-  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [triggeredNotification, setTriggeredNotification] = useState<Notification | null>(null);
@@ -117,15 +116,6 @@ export function Notifications() {
 
   const handleDismissTriggeredNotification = () => {
     setTriggeredNotification(null);
-  };
-
-  const handleGoToTask = () => {
-    if (triggeredNotification) {
-      // Store the task name to highlight it on the dashboard
-      localStorage.setItem('highlightTask', triggeredNotification.task);
-      setTriggeredNotification(null);
-      navigate('/dashboard');
-    }
   };
 
   const upcomingNotifications = notifications.filter(n => !n.sent);
@@ -293,11 +283,11 @@ export function Notifications() {
 
             <div className="flex flex-col space-y-3">
               <Button
-                onClick={handleGoToTask}
+                onClick={handleDismissTriggeredNotification}
                 className="w-full bg-primary hover:bg-primary/90"
               >
                 <Target className="w-4 h-4 mr-2" />
-                Go to Task
+                Got it!
               </Button>
               <Button
                 variant="outline"

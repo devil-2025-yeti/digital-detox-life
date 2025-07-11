@@ -8,11 +8,10 @@ import { useApp } from '@/contexts/AppContext';
 import { getMotivationalQuote } from '@/utils/aiTaskGenerator';
 import { AddTaskDialog } from './AddTaskDialog';
 import { EditTaskDialog } from './EditTaskDialog';
-import { AppSidebar } from './AppSidebar';
 import { NotificationSystem } from './NotificationSystem';
-import { toast } from '@/hooks/use-toast';
-import { ScreenTime } from './ScreenTime';
 import { SocialMediaMonitor } from './SocialMediaMonitor';
+import { AppSidebar } from './AppSidebar';
+import { ScreenTime } from './ScreenTime';
 import { Task } from '@/types';
 
 export function Dashboard() {
@@ -20,310 +19,348 @@ export function Dashboard() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [quote, setQuote] = useState('');
   const [showAddTask, setShowAddTask] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [showEditTask, setShowEditTask] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [highlightedTask, setHighlightedTask] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load user and tasks from localStorage on component mount
+    // Load user data from localStorage on mount
     const savedUser = localStorage.getItem('user');
     const savedTasks = localStorage.getItem('tasks');
-
-    if (savedUser) {
+    const hasSeenCelebration = localStorage.getItem('hasSeenCelebration');
+    
+    if (savedUser && !state.user) {
       const user = JSON.parse(savedUser);
       dispatch({ type: 'SET_USER', payload: user });
     }
-
-    if (savedTasks) {
+    
+    if (savedTasks && state.tasks.length === 0) {
       const tasks = JSON.parse(savedTasks);
       dispatch({ type: 'SET_TASKS', payload: tasks });
     }
 
-    // Generate a motivational quote
-    const generateQuote = async () => {
-      const newQuote = await getMotivationalQuote();
-      setQuote(newQuote);
-    };
-    generateQuote();
-
-    // Celebration logic
-    const allTasksCompleted = state.tasks.length > 0 && state.tasks.every(task => task.completed);
-    if (allTasksCompleted && !showCelebration) {
+    // Show celebration only if:
+    // 1. User has not seen celebration before
+    // 2. User exists and has tasks
+    // 3. This is their first visit to dashboard after creating tasks
+    if (!hasSeenCelebration && state.user && state.tasks.length > 0) {
       setShowCelebration(true);
-      setTimeout(() => setShowCelebration(false), 5000);
-    }
-
-    // Check if we need to highlight a specific task
-    const taskToHighlight = localStorage.getItem('highlightTask');
-    if (taskToHighlight) {
-      setHighlightedTask(taskToHighlight);
-      localStorage.removeItem('highlightTask');
+      setQuote(getMotivationalQuote());
       
-      // Remove highlight after 3 seconds
-      setTimeout(() => setHighlightedTask(null), 3000);
+      // Mark that user has seen the celebration
+      localStorage.setItem('hasSeenCelebration', 'true');
+      
+      const timer = setTimeout(() => setShowCelebration(false), 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setQuote(getMotivationalQuote());
     }
   }, [state.user, state.tasks.length, dispatch]);
 
-  const toggleTaskCompletion = (id: string) => {
-    dispatch({ type: 'TOGGLE_TASK_COMPLETION', payload: id });
-    toast({
-      title: 'Task Updated',
-      description: 'The task completion status has been updated.',
-    });
-  };
-
-  const deleteTask = (id: string) => {
-    dispatch({ type: 'DELETE_TASK', payload: id });
-    toast({
-      title: 'Task Deleted',
-      description: 'The task has been successfully deleted.',
-    });
-  };
-
-  const pendingTasks = state.tasks.filter(task => !task.completed);
   const completedTasks = state.tasks.filter(task => task.completed);
-
-  const progress = state.tasks.length > 0
-    ? (completedTasks.length / state.tasks.length) * 100
+  const pendingTasks = state.tasks.filter(task => !task.completed);
+  const progressPercentage = state.tasks.length > 0 
+    ? Math.round((completedTasks.length / state.tasks.length) * 100) 
     : 0;
 
+  // Sort pending tasks by priority: High -> Medium -> Low
+  const sortedPendingTasks = pendingTasks.sort((a, b) => {
+    const priorityOrder = { 'High': 0, 'Medium': 1, 'Low': 2 };
+    return priorityOrder[a.priority] - priorityOrder[b.priority];
+  });
+
+  // Sort completed tasks by priority as well
+  const sortedCompletedTasks = completedTasks.sort((a, b) => {
+    const priorityOrder = { 'High': 0, 'Medium': 1, 'Low': 2 };
+    return priorityOrder[a.priority] - priorityOrder[b.priority];
+  });
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'High': return 'bg-red-100 text-red-700 border-red-200';
+      case 'Medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'Low': return 'bg-green-100 text-green-700 border-green-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
+  const handleEditTask = (task: Task) => {
+    setTaskToEdit(task);
+    setShowEditTask(true);
+  };
+
+  const handleGoToTasks = () => {
+    // Scroll to tasks section or focus on task list
+    const tasksSection = document.getElementById('tasks-section');
+    if (tasksSection) {
+      tasksSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  if (showCelebration) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-primary to-tree-600">
+        <div className="text-center text-white animate-fade-in max-w-sm">
+          <div className="mb-8">
+            {[...Array(12)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-4 h-4 bg-yellow-300 rounded-full animate-confetti"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 0.5}s`
+                }}
+              />
+            ))}
+          </div>
+          
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4">🎉 Wonderful!</h1>
+          <p className="text-lg sm:text-xl mb-2">Your personalized plan is ready</p>
+          <p className="text-base sm:text-lg opacity-90">Time to begin your focused journey</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <div className="flex min-h-screen bg-gradient-to-br from-primary/5 to-tree-600/5">
-        <AppSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-        
-        <div className="flex-1 min-h-screen">
-          {/* Header */}
-          <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-sm border-b border-white/20 p-3 sm:p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 sm:space-x-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="md:hidden"
-                >
-                  <Menu className="w-5 h-5" />
-                </Button>
-                <div>
-                  <h1 className="text-lg sm:text-xl font-semibold text-gray-800">Dashboard</h1>
-                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Welcome back, {state.user?.name}!</p>
+    <div className="flex min-h-screen bg-gradient-to-br from-primary/5 to-tree-600/5">
+      <AppSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      
+      <div className="flex-1 min-h-screen">
+        {/* Header */}
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-sm border-b border-white/20 p-3 sm:p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="md:hidden"
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/0cebede7-411c-44f1-a1fa-8c5578b235f1.png" 
+                    alt="Detach Logo" 
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-              </div>
-              <div className="flex items-center space-x-3 sm:space-x-4">
-                <NotificationSystem onGoToTasks={() => {}} />
+                <div>
+                  <h1 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">
+                    Welcome back, {state.user?.name || 'User'} ✨
+                  </h1>
+                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Let's make today meaningful and focused</p>
+                </div>
               </div>
             </div>
-          </header>
+          </div>
+        </header>
 
-          <div className="p-3 sm:p-6">
-            <div className="max-w-4xl mx-auto">
-              {/* Stats Section */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
-                <Card className="p-4 sm:p-6 glass-effect">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="space-y-1">
-                      <p className="text-sm text-gray-500">Tasks Completed</p>
-                      <p className="text-2xl font-semibold text-gray-800">{completedTasks.length}</p>
-                    </div>
-                    <Check className="w-6 h-6 text-green-500" />
-                  </div>
-                  <Progress value={progress} className="h-2" />
-                </Card>
-
-                <Card className="p-4 sm:p-6 glass-effect">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="space-y-1">
-                      <p className="text-sm text-gray-500">Pending Tasks</p>
-                      <p className="text-2xl font-semibold text-gray-800">{pendingTasks.length}</p>
-                    </div>
-                    <Calendar className="w-6 h-6 text-blue-500" />
-                  </div>
-                  <p className="text-sm text-gray-500">Keep up the momentum!</p>
-                </Card>
-
-                <Card className="p-4 sm:p-6 glass-effect">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="space-y-1">
-                      <p className="text-sm text-gray-500">Overall Progress</p>
-                      <p className="text-2xl font-semibold text-gray-800">{progress.toFixed(0)}%</p>
-                    </div>
-                    <Quote className="w-6 h-6 text-purple-500" />
-                  </div>
-                  <p className="text-sm text-gray-500">Towards your goals</p>
-                </Card>
+        <div className="p-3 sm:p-6 pb-20">
+          <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
+            {/* Progress Overview */}
+            <Card className="p-4 sm:p-6 glass-effect">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Your Progress</h2>
+                <span className="text-xl sm:text-2xl font-bold text-primary">
+                  {progressPercentage}%
+                </span>
               </div>
+              
+              <Progress value={progressPercentage} className="mb-4" />
+              
+              <div className="flex justify-between text-xs sm:text-sm text-gray-600">
+                <span>{completedTasks.length} completed</span>
+                <span>{pendingTasks.length} remaining</span>
+              </div>
+            </Card>
 
-              {/* Motivational Quote Section */}
-              <Card className="p-4 sm:p-6 glass-effect mb-6">
-                <div className="flex items-center space-x-4 mb-4">
-                  <Quote className="w-5 h-5 text-primary" />
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Daily Motivation</h2>
+            {/* Motivational Quote */}
+            <Card className="p-4 sm:p-6 glass-effect">
+              <div className="flex items-start space-x-3">
+                <Quote className="w-5 sm:w-6 h-5 sm:h-6 text-primary mt-1 flex-shrink-0" />
+                <p className="text-sm sm:text-base text-gray-700 italic leading-relaxed">
+                  "{quote}"
+                </p>
+              </div>
+            </Card>
+
+            {/* Add Task Button */}
+            <div>
+              <Button
+                onClick={() => setShowAddTask(true)}
+                className="w-full rounded-2xl py-4 sm:py-6 bg-gradient-to-r from-primary to-tree-600 hover:from-primary/90 hover:to-tree-700 transition-all duration-300 text-sm sm:text-base"
+              >
+                <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                Add New Task
+              </Button>
+            </div>
+
+            <div id="tasks-section">
+              {/* Pending Tasks */}
+              {sortedPendingTasks.length > 0 && (
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
+                    Focus Areas ({sortedPendingTasks.length})
+                  </h3>
+                  
+                  <div className="space-y-3 sm:space-y-4">
+                    {sortedPendingTasks.map((task, index) => (
+                      <TaskCard 
+                        key={task.id} 
+                        task={task} 
+                        index={index}
+                        getPriorityColor={getPriorityColor}
+                        onEdit={handleEditTask}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <p className="text-gray-700 italic">"{quote}"</p>
-              </Card>
+              )}
 
-              {/* Tasks Section */}
-              <div className="grid gap-4 sm:gap-6 mb-6">
-                {/* Pending Tasks */}
-                {pendingTasks.length > 0 && (
-                  <Card className="p-4 sm:p-6 glass-effect">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Pending Tasks</h2>
-                      <Badge variant="secondary">{pendingTasks.length}</Badge>
-                    </div>
-                    <div className="space-y-3">
-                      {pendingTasks.map((task) => (
-                        <div 
-                          key={task.id} 
-                          className={`flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white/60 backdrop-blur-sm border transition-all duration-300 ${
-                            highlightedTask === task.title 
-                              ? 'border-primary bg-primary/10 shadow-md scale-[1.02]' 
-                              : 'border-gray-200'
-                          }`}
-                        >
-                          <div className="flex items-center space-x-3 flex-1 min-w-0">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleTaskCompletion(task.id)}
-                              className="p-1 h-6 w-6 rounded-full border-2 border-gray-300 hover:border-primary hover:bg-primary/10"
-                            >
-                              <Check className="w-3 h-3" />
-                            </Button>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-800 text-sm sm:text-base truncate">{task.title}</h3>
-                              <div className="flex items-center space-x-2 mt-1">
-                                <Badge 
-                                  variant={task.priority === 'High' ? 'destructive' : task.priority === 'Medium' ? 'default' : 'secondary'}
-                                  className="text-xs"
-                                >
-                                  {task.priority}
-                                </Badge>
-                                {task.dueDate && (
-                                  <div className="flex items-center text-xs text-gray-500">
-                                    <Calendar className="w-3 h-3 mr-1" />
-                                    {new Date(task.dueDate).toLocaleDateString()}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-1 ml-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setEditingTask(task)}
-                              className="p-1 h-7 w-7"
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => deleteTask(task.id)}
-                              className="p-1 h-7 w-7 text-red-600 hover:text-red-700"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                )}
+              {/* Completed Tasks */}
+              {sortedCompletedTasks.length > 0 && (
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
+                    Completed ({sortedCompletedTasks.length})
+                  </h3>
+                  
+                  <div className="space-y-3 sm:space-y-4">
+                    {sortedCompletedTasks.map((task, index) => (
+                      <TaskCard 
+                        key={task.id} 
+                        task={task} 
+                        index={index}
+                        getPriorityColor={getPriorityColor}
+                        onEdit={handleEditTask}
+                        isCompleted
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
 
-                {/* Completed Tasks */}
-                {completedTasks.length > 0 && (
-                  <Card className="p-4 sm:p-6 glass-effect">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Completed Tasks</h2>
-                      <Badge variant="outline">{completedTasks.length}</Badge>
-                    </div>
-                    <div className="space-y-3">
-                      {completedTasks.map((task) => (
-                        <div key={task.id} className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white/60 backdrop-blur-sm border border-gray-200 transition-all duration-300">
-                          <div className="flex items-center space-x-3 flex-1 min-w-0">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleTaskCompletion(task.id)}
-                              className="p-1 h-6 w-6 rounded-full border-2 border-green-500 bg-green-500/10"
-                            >
-                              <Check className="w-3 h-3 text-green-500" />
-                            </Button>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-800 line-through text-sm sm:text-base truncate">{task.title}</h3>
-                              <div className="flex items-center space-x-2 mt-1">
-                                <Badge
-                                  variant={task.priority === 'High' ? 'destructive' : task.priority === 'Medium' ? 'default' : 'secondary'}
-                                  className="text-xs"
-                                >
-                                  {task.priority}
-                                </Badge>
-                                {task.dueDate && (
-                                  <div className="flex items-center text-xs text-gray-500">
-                                    <Calendar className="w-3 h-3 mr-1" />
-                                    {new Date(task.dueDate).toLocaleDateString()}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-1 ml-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setEditingTask(task)}
-                              className="p-1 h-7 w-7"
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => deleteTask(task.id)}
-                              className="p-1 h-7 w-7 text-red-600 hover:text-red-700"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                )}
-              </div>
-
-              {/* Screen Time and Social Media Monitor */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+              {/* Screen Time Section - moved below completed tasks */}
+              <div>
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Screen Time</h2>
                 <ScreenTime />
-                <SocialMediaMonitor />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Add Task Modal */}
-      <AddTaskDialog open={showAddTask} onOpenChange={setShowAddTask} />
-
-      {/* Edit Task Modal */}
-      <EditTaskDialog
-        open={!!editingTask}
-        onOpenChange={() => setEditingTask(null)}
-        task={editingTask}
+      <AddTaskDialog 
+        open={showAddTask} 
+        onOpenChange={setShowAddTask} 
       />
 
-      {/* Celebration */}
-      {showCelebration && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <Card className="max-w-md mx-4 p-8 text-center animate-bounce">
-            <h2 className="text-3xl font-bold text-green-600 mb-4">Congratulations!</h2>
-            <p className="text-gray-700 text-lg">You've completed all your tasks!</p>
-          </Card>
+      <EditTaskDialog
+        open={showEditTask}
+        onOpenChange={setShowEditTask}
+        task={taskToEdit}
+      />
+
+      <NotificationSystem onGoToTasks={handleGoToTasks} />
+      <SocialMediaMonitor onGoToTasks={handleGoToTasks} />
+    </div>
+  );
+}
+
+function TaskCard({ task, index, getPriorityColor, onEdit, isCompleted = false }: any) {
+  const { dispatch } = useApp();
+
+  const handleToggleComplete = () => {
+    dispatch({ type: 'TOGGLE_TASK_COMPLETE', payload: task.id });
+    
+    // Update localStorage
+    const currentTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+    const updatedTasks = currentTasks.map((t: any) => 
+      t.id === task.id ? { ...t, completed: !t.completed } : t
+    );
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+  };
+
+  const handleDelete = () => {
+    if (confirm('Are you sure you want to delete this task?')) {
+      dispatch({ type: 'DELETE_TASK', payload: task.id });
+      
+      // Update localStorage
+      const currentTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+      const updatedTasks = currentTasks.filter((t: any) => t.id !== task.id);
+      localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    }
+  };
+
+  return (
+    <Card 
+      className={`task-card p-4 sm:p-6 animate-slide-up ${
+        isCompleted ? 'opacity-70' : ''
+      } priority-${task.priority.toLowerCase()}`}
+      style={{ animationDelay: `${index * 100}ms` }}
+    >
+      <div className="flex items-start space-x-3 sm:space-x-4">
+        <button
+          onClick={handleToggleComplete}
+          className={`w-5 sm:w-6 h-5 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+            isCompleted 
+              ? 'bg-green-600 border-green-600' 
+              : 'border-gray-300 hover:border-primary'
+          }`}
+        >
+          {isCompleted && <Check className="w-3 sm:w-4 h-3 sm:h-4 text-white" />}
+        </button>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between mb-2 gap-2">
+            <h3 className={`font-semibold text-sm sm:text-base ${
+              isCompleted ? 'line-through text-gray-500' : 'text-gray-800'
+            } break-words`}>
+              {task.title}
+            </h3>
+            
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+              <Badge className={`${getPriorityColor(task.priority)} text-xs`}>
+                {task.priority}
+              </Badge>
+              
+              {!isCompleted && (
+                <button
+                  onClick={() => onEdit(task)}
+                  className="p-1 text-gray-400 hover:text-primary transition-colors"
+                >
+                  <Edit className="w-3 sm:w-4 h-3 sm:h-4" />
+                </button>
+              )}
+              
+              <button
+                onClick={handleDelete}
+                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+              >
+                <Trash2 className="w-3 sm:w-4 h-3 sm:h-4" />
+              </button>
+            </div>
+          </div>
+          
+          {task.description && (
+            <p className={`text-xs sm:text-sm mb-3 ${
+              isCompleted ? 'text-gray-400' : 'text-gray-600'
+            } break-words`}>
+              {task.description}
+            </p>
+          )}
+
+          {task.dueDate && (
+            <div className="flex items-center text-xs sm:text-sm text-gray-500">
+              <Calendar className="w-3 sm:w-4 h-3 sm:h-4 mr-1" />
+              Due: {new Date(task.dueDate).toLocaleDateString()}
+            </div>
+          )}
         </div>
-      )}
-    </>
+      </div>
+    </Card>
   );
 }
