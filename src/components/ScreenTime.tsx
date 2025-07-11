@@ -72,7 +72,8 @@ export function ScreenTime() {
 
   const getTodayData = () => {
     const today = getCurrentWeekData()[6]; // Last item is today
-    return today || { date: '', totalUsage: 0, socialMediaUsage: 0 };
+    // Override today's social media usage to be exactly 1 hr 13 m (73 minutes)
+    return today ? { ...today, socialMediaUsage: 73 } : { date: '', totalUsage: 0, socialMediaUsage: 73 };
   };
 
   const getWeeklyAverage = (data: ScreenTimeData[]) => {
@@ -95,7 +96,7 @@ export function ScreenTime() {
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+    return hours > 0 ? `${hours} hr ${mins} m` : `${mins} m`;
   };
 
   const getMaxUsage = (data: ScreenTimeData[]) => {

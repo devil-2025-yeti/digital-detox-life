@@ -27,6 +27,7 @@ export function Dashboard() {
     // Load user data from localStorage on mount
     const savedUser = localStorage.getItem('user');
     const savedTasks = localStorage.getItem('tasks');
+    const hasVisitedDashboard = localStorage.getItem('hasVisitedDashboard');
     
     if (savedUser && !state.user) {
       const user = JSON.parse(savedUser);
@@ -38,13 +39,20 @@ export function Dashboard() {
       dispatch({ type: 'SET_TASKS', payload: tasks });
     }
 
-    // Show celebration animation on first load
-    setShowCelebration(true);
-    setQuote(getMotivationalQuote());
-    
-    const timer = setTimeout(() => setShowCelebration(false), 3000);
-    return () => clearTimeout(timer);
-  }, []);
+    // Only show celebration animation for first-time visitors to dashboard
+    if (!hasVisitedDashboard && state.user && state.tasks.length > 0) {
+      setShowCelebration(true);
+      setQuote(getMotivationalQuote());
+      
+      // Mark that user has visited dashboard
+      localStorage.setItem('hasVisitedDashboard', 'true');
+      
+      const timer = setTimeout(() => setShowCelebration(false), 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setQuote(getMotivationalQuote());
+    }
+  }, [state.user, state.tasks]);
 
   const { dispatch } = useApp();
   const completedTasks = state.tasks.filter(task => task.completed);
