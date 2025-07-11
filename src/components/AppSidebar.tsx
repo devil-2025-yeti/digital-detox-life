@@ -1,6 +1,7 @@
+
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { User, Bell, LogOut, Menu, X, Home } from 'lucide-react';
+import { User, Bell, LogOut, Menu, X, Home, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useApp } from '@/contexts/AppContext';
@@ -57,7 +58,12 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/20">
-            <h2 className="text-xl font-bold text-primary">Detach</h2>
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-tree-600 rounded-lg flex items-center justify-center">
+                <Smartphone className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-primary">Detach</h2>
+            </div>
             <Button
               variant="ghost"
               size="sm"

@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Check, Edit, Trash2, Calendar, Quote, Menu } from 'lucide-react';
+import { Plus, Check, Edit, Trash2, Calendar, Quote, Menu, Smartphone } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { getMotivationalQuote } from '@/utils/aiTaskGenerator';
 import { AddTaskDialog } from './AddTaskDialog';
@@ -131,11 +130,16 @@ export function Dashboard() {
               >
                 <Menu className="w-5 h-5" />
               </Button>
-              <div>
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">
-                  Welcome back, {state.user?.name || 'User'} ✨
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Let's make today meaningful and focused</p>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-tree-600 rounded-lg flex items-center justify-center">
+                  <Smartphone className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">
+                    Welcome back, {state.user?.name || 'User'} ✨
+                  </h1>
+                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Let's make today meaningful and focused</p>
+                </div>
               </div>
             </div>
           </div>
