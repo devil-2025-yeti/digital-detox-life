@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -21,9 +20,14 @@ export function NotificationSystem({ onGoToTasks }: NotificationSystemProps) {
   const [dailyNotificationCount, setDailyNotificationCount] = useState(0);
 
   useEffect(() => {
+    // Only show notifications if user has completed onboarding and has tasks
+    if (!state.user || state.tasks.length === 0) {
+      return;
+    }
+
     // Check for daily notifications based on user's wake time
     const checkDailyNotifications = () => {
-      if (!state.user || dailyNotificationCount >= 5) return;
+      if (dailyNotificationCount >= 5) return;
 
       const now = new Date();
       const wakeTime = state.user.wakeTime;

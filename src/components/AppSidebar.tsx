@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { User, Bell, LogOut, Menu, X, Home } from 'lucide-react';
@@ -24,7 +23,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
     {
       icon: Home,
       label: 'Dashboard',
-      path: '/'
+      path: '/dashboard'
     },
     {
       icon: User,
