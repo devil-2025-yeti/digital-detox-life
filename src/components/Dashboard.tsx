@@ -3,13 +3,15 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Check, Edit, Trash2, Calendar, Quote } from 'lucide-react';
+import { Plus, Check, Edit, Trash2, Calendar, Quote, Menu } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { getMotivationalQuote } from '@/utils/aiTaskGenerator';
 import { AddTaskDialog } from './AddTaskDialog';
 import { EditTaskDialog } from './EditTaskDialog';
 import { NotificationSystem } from './NotificationSystem';
 import { SocialMediaMonitor } from './SocialMediaMonitor';
+import { AppSidebar } from './AppSidebar';
+import { ScreenTime } from './ScreenTime';
 import { Task } from '@/types';
 
 export function Dashboard() {
@@ -19,6 +21,7 @@ export function Dashboard() {
   const [showAddTask, setShowAddTask] = useState(false);
   const [showEditTask, setShowEditTask] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     // Show celebration animation on first load
@@ -96,100 +99,122 @@ export function Dashboard() {
   }
 
   return (
-    <>
-      <div className="min-h-screen p-6 pb-20">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="mb-8 animate-fade-in">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Welcome back, {state.user?.name} ✨
-            </h1>
-            <p className="text-gray-600">
-              Let's make today meaningful and focused
-            </p>
-          </div>
-
-          {/* Progress Overview */}
-          <Card className="p-6 mb-6 animate-slide-up glass-effect">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Your Progress</h2>
-              <span className="text-2xl font-bold text-primary">
-                {progressPercentage}%
-              </span>
-            </div>
-            
-            <Progress value={progressPercentage} className="mb-4" />
-            
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>{completedTasks.length} completed</span>
-              <span>{pendingTasks.length} remaining</span>
-            </div>
-          </Card>
-
-          {/* Motivational Quote */}
-          <Card className="p-6 mb-6 animate-slide-up glass-effect">
-            <div className="flex items-start space-x-3">
-              <Quote className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-              <p className="text-gray-700 italic leading-relaxed">
-                "{quote}"
-              </p>
-            </div>
-          </Card>
-
-          {/* Add Task Button */}
-          <div className="mb-6">
-            <Button
-              onClick={() => setShowAddTask(true)}
-              className="w-full rounded-2xl py-6 bg-gradient-to-r from-primary to-tree-600 hover:from-primary/90 hover:to-tree-700 transition-all duration-300"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Add New Task
-            </Button>
-          </div>
-
-          <div id="tasks-section">
-            {/* Pending Tasks */}
-            {sortedPendingTasks.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                  Focus Areas ({sortedPendingTasks.length})
-                </h3>
-                
-                <div className="space-y-4">
-                  {sortedPendingTasks.map((task, index) => (
-                    <TaskCard 
-                      key={task.id} 
-                      task={task} 
-                      index={index}
-                      getPriorityColor={getPriorityColor}
-                      onEdit={handleEditTask}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Completed Tasks */}
-            {sortedCompletedTasks.length > 0 && (
+    <div className="flex min-h-screen bg-gradient-to-br from-primary/5 to-tree-600/5">
+      <AppSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      
+      <div className="flex-1 min-h-screen md:ml-0">
+        {/* Header */}
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-sm border-b border-white/20 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="md:hidden"
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
               <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                  Completed ({sortedCompletedTasks.length})
-                </h3>
-                
-                <div className="space-y-4">
-                  {sortedCompletedTasks.map((task, index) => (
-                    <TaskCard 
-                      key={task.id} 
-                      task={task} 
-                      index={index}
-                      getPriorityColor={getPriorityColor}
-                      onEdit={handleEditTask}
-                      isCompleted
-                    />
-                  ))}
-                </div>
+                <h1 className="text-xl font-semibold text-gray-800">
+                  Welcome back, {state.user?.name} ✨
+                </h1>
+                <p className="text-sm text-gray-600">Let's make today meaningful and focused</p>
               </div>
-            )}
+            </div>
+          </div>
+        </header>
+
+        <div className="p-6 pb-20">
+          <div className="max-w-6xl mx-auto space-y-8">
+            {/* Progress Overview */}
+            <Card className="p-6 glass-effect">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-800">Your Progress</h2>
+                <span className="text-2xl font-bold text-primary">
+                  {progressPercentage}%
+                </span>
+              </div>
+              
+              <Progress value={progressPercentage} className="mb-4" />
+              
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>{completedTasks.length} completed</span>
+                <span>{pendingTasks.length} remaining</span>
+              </div>
+            </Card>
+
+            {/* Screen Time Section */}
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Screen Time</h2>
+              <ScreenTime />
+            </div>
+
+            {/* Motivational Quote */}
+            <Card className="p-6 glass-effect">
+              <div className="flex items-start space-x-3">
+                <Quote className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                <p className="text-gray-700 italic leading-relaxed">
+                  "{quote}"
+                </p>
+              </div>
+            </Card>
+
+            {/* Add Task Button */}
+            <div>
+              <Button
+                onClick={() => setShowAddTask(true)}
+                className="w-full rounded-2xl py-6 bg-gradient-to-r from-primary to-tree-600 hover:from-primary/90 hover:to-tree-700 transition-all duration-300"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Add New Task
+              </Button>
+            </div>
+
+            <div id="tasks-section">
+              {/* Pending Tasks */}
+              {sortedPendingTasks.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                    Focus Areas ({sortedPendingTasks.length})
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {sortedPendingTasks.map((task, index) => (
+                      <TaskCard 
+                        key={task.id} 
+                        task={task} 
+                        index={index}
+                        getPriorityColor={getPriorityColor}
+                        onEdit={handleEditTask}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Completed Tasks */}
+              {sortedCompletedTasks.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                    Completed ({sortedCompletedTasks.length})
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {sortedCompletedTasks.map((task, index) => (
+                      <TaskCard 
+                        key={task.id} 
+                        task={task} 
+                        index={index}
+                        getPriorityColor={getPriorityColor}
+                        onEdit={handleEditTask}
+                        isCompleted
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -207,7 +232,7 @@ export function Dashboard() {
 
       <NotificationSystem onGoToTasks={handleGoToTasks} />
       <SocialMediaMonitor onGoToTasks={handleGoToTasks} />
-    </>
+    </div>
   );
 }
 

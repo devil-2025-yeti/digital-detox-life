@@ -14,6 +14,7 @@ export function SocialMediaMonitor({ onGoToTasks }: SocialMediaMonitorProps) {
   const [showLimitReached, setShowLimitReached] = useState(false);
   const [showBreakReminder, setShowBreakReminder] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
+  const [lastDismissTime, setLastDismissTime] = useState<Date | null>(null);
 
   // Social media apps to monitor
   const socialMediaApps = [
@@ -21,20 +22,22 @@ export function SocialMediaMonitor({ onGoToTasks }: SocialMediaMonitorProps) {
     'snapchat', 'linkedin', 'pinterest', 'reddit', 'whatsapp'
   ];
 
+  const isOnSocialMedia = () => {
+    const currentUrl = window.location.href.toLowerCase();
+    return socialMediaApps.some(app => 
+      currentUrl.includes(app) || document.title.toLowerCase().includes(app)
+    );
+  };
+
   useEffect(() => {
     // Simulate social media usage tracking
-    // In a real app, this would integrate with device APIs or browser extensions
     const simulateUsageTracking = () => {
-      // Check if user is on social media (simplified simulation)
-      const currentUrl = window.location.href.toLowerCase();
-      const isOnSocialMedia = socialMediaApps.some(app => 
-        currentUrl.includes(app) || document.title.toLowerCase().includes(app)
-      );
+      const onSocialMedia = isOnSocialMedia();
 
-      if (isOnSocialMedia && !currentSessionStart) {
+      if (onSocialMedia && !currentSessionStart) {
         setCurrentSessionStart(new Date());
         console.log('Started social media session');
-      } else if (!isOnSocialMedia && currentSessionStart) {
+      } else if (!onSocialMedia && currentSessionStart) {
         // Session ended
         const sessionDuration = Math.floor((new Date().getTime() - currentSessionStart.getTime()) / (1000 * 60));
         setDailyUsage(prev => prev + sessionDuration);
@@ -93,15 +96,22 @@ export function SocialMediaMonitor({ onGoToTasks }: SocialMediaMonitorProps) {
 
     // Check if daily limit (120 minutes = 2 hours) is reached
     if (dailyUsage >= 120 && !showLimitReached) {
-      setShowLimitReached(true);
-      setShowButtons(false);
-      setTimeout(() => setShowButtons(true), 5000);
+      // Check if we should show the limit again (only after 10 minutes and if still on social media)
+      const canShowAgain = !lastDismissTime || 
+        (new Date().getTime() - lastDismissTime.getTime()) >= 10 * 60 * 1000;
+      
+      if (canShowAgain && isOnSocialMedia()) {
+        setShowLimitReached(true);
+        setShowButtons(false);
+        setTimeout(() => setShowButtons(true), 5000);
+      }
     }
-  }, [dailyUsage, showLimitReached]);
+  }, [dailyUsage, showLimitReached, lastDismissTime]);
 
   const handleDismiss = () => {
     if (showLimitReached) {
       setShowLimitReached(false);
+      setLastDismissTime(new Date());
     }
     if (showBreakReminder) {
       setShowBreakReminder(false);
@@ -114,6 +124,9 @@ export function SocialMediaMonitor({ onGoToTasks }: SocialMediaMonitorProps) {
     setShowLimitReached(false);
     setShowBreakReminder(false);
     setShowButtons(false);
+    if (showLimitReached) {
+      setLastDismissTime(new Date());
+    }
     onGoToTasks();
   };
 
