@@ -65,7 +65,7 @@ export function Dashboard() {
   }, [state.user, state.tasks.length, dispatch]);
 
   const toggleTaskCompletion = (id: string) => {
-    dispatch({ type: 'TOGGLE_TASK_COMPLETE', payload: id });
+    dispatch({ type: 'TOGGLE_TASK_COMPLETION', payload: id });
     toast({
       title: 'Task Updated',
       description: 'The task completion status has been updated.',
@@ -78,11 +78,6 @@ export function Dashboard() {
       title: 'Task Deleted',
       description: 'The task has been successfully deleted.',
     });
-  };
-
-  const handleGoToTasks = () => {
-    // This function can be used to scroll to tasks or perform other actions
-    console.log('Navigating to tasks from social media monitor');
   };
 
   const pendingTasks = state.tasks.filter(task => !task.completed);
@@ -303,7 +298,7 @@ export function Dashboard() {
               {/* Screen Time and Social Media Monitor */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
                 <ScreenTime />
-                <SocialMediaMonitor onGoToTasks={handleGoToTasks} />
+                <SocialMediaMonitor />
               </div>
             </div>
           </div>
