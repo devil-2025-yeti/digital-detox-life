@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Clock, Target, Quote } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Bell, Clock, Target, Quote, Menu } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
+import { AppSidebar } from './AppSidebar';
 
 interface Notification {
   id: string;
@@ -16,6 +18,7 @@ interface Notification {
 export function Notifications() {
   const { state } = useApp();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Generate motivational quotes based on focus area
   const getMotivationalQuotes = () => {
@@ -103,88 +106,107 @@ export function Notifications() {
   const sentNotifications = notifications.filter(n => n.sent);
 
   return (
-    <div className="min-h-screen p-3 sm:p-6 bg-gradient-to-br from-primary/5 to-tree-600/5">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Notifications</h1>
-          <p className="text-sm sm:text-base text-gray-600">
-            Your daily motivational reminders and focus nudges
-          </p>
-        </div>
-
-        {/* Upcoming Notifications */}
-        <div className="mb-6 sm:mb-8">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center">
-            <Clock className="w-4 sm:w-5 h-4 sm:h-5 mr-2 text-primary" />
-            Upcoming Today ({upcomingNotifications.length})
-          </h2>
-          
-          <div className="space-y-3 sm:space-y-4">
-            {upcomingNotifications.map((notification) => (
-              <Card key={notification.id} className="p-4 sm:p-6 glass-effect border-l-4 border-l-primary">
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-2">
-                  <div className="flex items-center space-x-2">
-                    <Bell className="w-4 sm:w-5 h-4 sm:h-5 text-primary" />
-                    <span className="font-medium text-gray-800 text-sm sm:text-base">{notification.time}</span>
-                    <Badge variant="secondary" className="text-xs">Scheduled</Badge>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-start space-x-2 sm:space-x-3">
-                    <Quote className="w-3 sm:w-4 h-3 sm:h-4 text-primary mt-1 flex-shrink-0" />
-                    <p className="text-sm sm:text-base text-gray-700 italic">"{notification.quote}"</p>
-                  </div>
-                  
-                  <div className="flex items-start space-x-2 sm:space-x-3">
-                    <Target className="w-3 sm:w-4 h-3 sm:h-4 text-primary mt-1 flex-shrink-0" />
-                    <p className="text-sm sm:text-base text-gray-700">
-                      <span className="font-medium">Priority task:</span> {notification.task}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Sent Notifications */}
-        {sentNotifications.length > 0 && (
-          <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center">
-              <Bell className="w-4 sm:w-5 h-4 sm:h-5 mr-2 text-gray-500" />
-              Earlier Today ({sentNotifications.length})
-            </h2>
-            
-            <div className="space-y-3 sm:space-y-4">
-              {sentNotifications.map((notification) => (
-                <Card key={notification.id} className="p-4 sm:p-6 glass-effect opacity-70 border-l-4 border-l-gray-300">
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-2">
-                    <div className="flex items-center space-x-2">
-                      <Bell className="w-4 sm:w-5 h-4 sm:h-5 text-gray-500" />
-                      <span className="font-medium text-gray-600 text-sm sm:text-base">{notification.time}</span>
-                      <Badge variant="outline" className="text-xs">Sent</Badge>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-start space-x-2 sm:space-x-3">
-                      <Quote className="w-3 sm:w-4 h-3 sm:h-4 text-gray-500 mt-1 flex-shrink-0" />
-                      <p className="text-sm sm:text-base text-gray-600 italic">"{notification.quote}"</p>
-                    </div>
-                    
-                    <div className="flex items-start space-x-2 sm:space-x-3">
-                      <Target className="w-3 sm:w-4 h-3 sm:h-4 text-gray-500 mt-1 flex-shrink-0" />
-                      <p className="text-sm sm:text-base text-gray-600">
-                        <span className="font-medium">Priority task:</span> {notification.task}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+    <div className="flex min-h-screen bg-gradient-to-br from-primary/5 to-tree-600/5">
+      <AppSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      
+      <div className="flex-1 min-h-screen">
+        {/* Header */}
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-sm border-b border-white/20 p-3 sm:p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="md:hidden"
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-800">Notifications</h1>
+                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Your daily motivational reminders</p>
+              </div>
             </div>
           </div>
-        )}
+        </header>
+
+        <div className="p-3 sm:p-6">
+          <div className="max-w-4xl mx-auto">
+            {/* Upcoming Notifications */}
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <Clock className="w-4 sm:w-5 h-4 sm:h-5 mr-2 text-primary" />
+                Upcoming Today ({upcomingNotifications.length})
+              </h2>
+              
+              <div className="space-y-3 sm:space-y-4">
+                {upcomingNotifications.map((notification) => (
+                  <Card key={notification.id} className="p-4 sm:p-6 glass-effect border-l-4 border-l-primary">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-2">
+                      <div className="flex items-center space-x-2">
+                        <Bell className="w-4 sm:w-5 h-4 sm:h-5 text-primary" />
+                        <span className="font-medium text-gray-800 text-sm sm:text-base">{notification.time}</span>
+                        <Badge variant="secondary" className="text-xs">Scheduled</Badge>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-2 sm:space-x-3">
+                        <Quote className="w-3 sm:w-4 h-3 sm:h-4 text-primary mt-1 flex-shrink-0" />
+                        <p className="text-sm sm:text-base text-gray-700 italic">"{notification.quote}"</p>
+                      </div>
+                      
+                      <div className="flex items-start space-x-2 sm:space-x-3">
+                        <Target className="w-3 sm:w-4 h-3 sm:h-4 text-primary mt-1 flex-shrink-0" />
+                        <p className="text-sm sm:text-base text-gray-700">
+                          <span className="font-medium">Priority task:</span> {notification.task}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Sent Notifications */}
+            {sentNotifications.length > 0 && (
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                  <Bell className="w-4 sm:w-5 h-4 sm:h-5 mr-2 text-gray-500" />
+                  Earlier Today ({sentNotifications.length})
+                </h2>
+                
+                <div className="space-y-3 sm:space-y-4">
+                  {sentNotifications.map((notification) => (
+                    <Card key={notification.id} className="p-4 sm:p-6 glass-effect opacity-70 border-l-4 border-l-gray-300">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-2">
+                        <div className="flex items-center space-x-2">
+                          <Bell className="w-4 sm:w-5 h-4 sm:h-5 text-gray-500" />
+                          <span className="font-medium text-gray-600 text-sm sm:text-base">{notification.time}</span>
+                          <Badge variant="outline" className="text-xs">Sent</Badge>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-start space-x-2 sm:space-x-3">
+                          <Quote className="w-3 sm:w-4 h-3 sm:h-4 text-gray-500 mt-1 flex-shrink-0" />
+                          <p className="text-sm sm:text-base text-gray-600 italic">"{notification.quote}"</p>
+                        </div>
+                        
+                        <div className="flex items-start space-x-2 sm:space-x-3">
+                          <Target className="w-3 sm:w-4 h-3 sm:h-4 text-gray-500 mt-1 flex-shrink-0" />
+                          <p className="text-sm sm:text-base text-gray-600">
+                            <span className="font-medium">Priority task:</span> {notification.task}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

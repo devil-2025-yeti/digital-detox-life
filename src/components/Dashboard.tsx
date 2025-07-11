@@ -160,12 +160,6 @@ export function Dashboard() {
               </div>
             </Card>
 
-            {/* Screen Time Section */}
-            <div>
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Screen Time</h2>
-              <ScreenTime />
-            </div>
-
             {/* Motivational Quote */}
             <Card className="p-4 sm:p-6 glass-effect">
               <div className="flex items-start space-x-3">
@@ -211,7 +205,7 @@ export function Dashboard() {
 
               {/* Completed Tasks */}
               {sortedCompletedTasks.length > 0 && (
-                <div>
+                <div className="mb-6 sm:mb-8">
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
                     Completed ({sortedCompletedTasks.length})
                   </h3>
@@ -230,6 +224,12 @@ export function Dashboard() {
                   </div>
                 </div>
               )}
+
+              {/* Screen Time Section - moved below completed tasks */}
+              <div>
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Screen Time</h2>
+                <ScreenTime />
+              </div>
             </div>
           </div>
         </div>

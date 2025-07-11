@@ -50,9 +50,16 @@ export function NotificationSystem({ onGoToTasks }: NotificationSystemProps) {
     };
 
     const showDailyReminder = () => {
+      // Get actual tasks from state, prioritize incomplete tasks
       const pendingTasks = state.tasks.filter(task => !task.completed);
-      const highPriorityTask = pendingTasks.find(task => task.priority === 'High');
-      const topTask = highPriorityTask || pendingTasks[0];
+      
+      // Sort by priority: High -> Medium -> Low
+      const sortedTasks = pendingTasks.sort((a, b) => {
+        const priorityOrder = { 'High': 0, 'Medium': 1, 'Low': 2 };
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      });
+
+      const topTask = sortedTasks[0];
 
       if (topTask && dailyNotificationCount < 5) {
         setCurrentNotification({
@@ -64,6 +71,15 @@ export function NotificationSystem({ onGoToTasks }: NotificationSystemProps) {
         setDailyNotificationCount(prev => prev + 1);
 
         // Show buttons after 5 seconds
+        setTimeout(() => setShowButtons(true), 5000);
+      } else if (pendingTasks.length === 0 && dailyNotificationCount < 5) {
+        // If no pending tasks, show a general motivation message
+        setCurrentNotification({
+          type: 'daily-reminder',
+          message: "Great work! All tasks are complete. Time to set new goals!"
+        });
+        setShowButtons(false);
+        setDailyNotificationCount(prev => prev + 1);
         setTimeout(() => setShowButtons(true), 5000);
       }
     };

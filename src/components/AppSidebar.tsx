@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { User, Bell, LogOut, Menu, X } from 'lucide-react';
+import { User, Bell, LogOut, Menu, X, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useApp } from '@/contexts/AppContext';
@@ -22,8 +22,13 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
 
   const menuItems = [
     {
+      icon: Home,
+      label: 'Dashboard',
+      path: '/'
+    },
+    {
       icon: User,
-      label: 'Profile',
+      label: 'User Profile',
       path: '/profile'
     },
     {
