@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -24,6 +25,20 @@ export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
+    // Load user data from localStorage on mount
+    const savedUser = localStorage.getItem('user');
+    const savedTasks = localStorage.getItem('tasks');
+    
+    if (savedUser && !state.user) {
+      const user = JSON.parse(savedUser);
+      dispatch({ type: 'SET_USER', payload: user });
+    }
+    
+    if (savedTasks && state.tasks.length === 0) {
+      const tasks = JSON.parse(savedTasks);
+      dispatch({ type: 'SET_TASKS', payload: tasks });
+    }
+
     // Show celebration animation on first load
     setShowCelebration(true);
     setQuote(getMotivationalQuote());
@@ -32,6 +47,7 @@ export function Dashboard() {
     return () => clearTimeout(timer);
   }, []);
 
+  const { dispatch } = useApp();
   const completedTasks = state.tasks.filter(task => task.completed);
   const pendingTasks = state.tasks.filter(task => !task.completed);
   const progressPercentage = state.tasks.length > 0 
@@ -74,8 +90,8 @@ export function Dashboard() {
 
   if (showCelebration) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-primary to-tree-600">
-        <div className="text-center text-white animate-fade-in">
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-primary to-tree-600">
+        <div className="text-center text-white animate-fade-in max-w-sm">
           <div className="mb-8">
             {[...Array(12)].map((_, i) => (
               <div
@@ -90,9 +106,9 @@ export function Dashboard() {
             ))}
           </div>
           
-          <h1 className="text-4xl font-bold mb-4">🎉 Wonderful!</h1>
-          <p className="text-xl mb-2">Your personalized plan is ready</p>
-          <p className="text-lg opacity-90">Time to begin your focused journey</p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4">🎉 Wonderful!</h1>
+          <p className="text-lg sm:text-xl mb-2">Your personalized plan is ready</p>
+          <p className="text-base sm:text-lg opacity-90">Time to begin your focused journey</p>
         </div>
       </div>
     );
@@ -102,11 +118,11 @@ export function Dashboard() {
     <div className="flex min-h-screen bg-gradient-to-br from-primary/5 to-tree-600/5">
       <AppSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
       
-      <div className="flex-1 min-h-screen md:ml-0">
+      <div className="flex-1 min-h-screen">
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-sm border-b border-white/20 p-4">
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-sm border-b border-white/20 p-3 sm:p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <Button
                 variant="ghost"
                 size="sm"
@@ -116,29 +132,29 @@ export function Dashboard() {
                 <Menu className="w-5 h-5" />
               </Button>
               <div>
-                <h1 className="text-xl font-semibold text-gray-800">
-                  Welcome back, {state.user?.name} ✨
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">
+                  Welcome back, {state.user?.name || 'User'} ✨
                 </h1>
-                <p className="text-sm text-gray-600">Let's make today meaningful and focused</p>
+                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Let's make today meaningful and focused</p>
               </div>
             </div>
           </div>
         </header>
 
-        <div className="p-6 pb-20">
-          <div className="max-w-6xl mx-auto space-y-8">
+        <div className="p-3 sm:p-6 pb-20">
+          <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
             {/* Progress Overview */}
-            <Card className="p-6 glass-effect">
+            <Card className="p-4 sm:p-6 glass-effect">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-800">Your Progress</h2>
-                <span className="text-2xl font-bold text-primary">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Your Progress</h2>
+                <span className="text-xl sm:text-2xl font-bold text-primary">
                   {progressPercentage}%
                 </span>
               </div>
               
               <Progress value={progressPercentage} className="mb-4" />
               
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-xs sm:text-sm text-gray-600">
                 <span>{completedTasks.length} completed</span>
                 <span>{pendingTasks.length} remaining</span>
               </div>
@@ -146,15 +162,15 @@ export function Dashboard() {
 
             {/* Screen Time Section */}
             <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Screen Time</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Screen Time</h2>
               <ScreenTime />
             </div>
 
             {/* Motivational Quote */}
-            <Card className="p-6 glass-effect">
+            <Card className="p-4 sm:p-6 glass-effect">
               <div className="flex items-start space-x-3">
-                <Quote className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-                <p className="text-gray-700 italic leading-relaxed">
+                <Quote className="w-5 sm:w-6 h-5 sm:h-6 text-primary mt-1 flex-shrink-0" />
+                <p className="text-sm sm:text-base text-gray-700 italic leading-relaxed">
                   "{quote}"
                 </p>
               </div>
@@ -164,9 +180,9 @@ export function Dashboard() {
             <div>
               <Button
                 onClick={() => setShowAddTask(true)}
-                className="w-full rounded-2xl py-6 bg-gradient-to-r from-primary to-tree-600 hover:from-primary/90 hover:to-tree-700 transition-all duration-300"
+                className="w-full rounded-2xl py-4 sm:py-6 bg-gradient-to-r from-primary to-tree-600 hover:from-primary/90 hover:to-tree-700 transition-all duration-300 text-sm sm:text-base"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
                 Add New Task
               </Button>
             </div>
@@ -174,12 +190,12 @@ export function Dashboard() {
             <div id="tasks-section">
               {/* Pending Tasks */}
               {sortedPendingTasks.length > 0 && (
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
                     Focus Areas ({sortedPendingTasks.length})
                   </h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {sortedPendingTasks.map((task, index) => (
                       <TaskCard 
                         key={task.id} 
@@ -196,11 +212,11 @@ export function Dashboard() {
               {/* Completed Tasks */}
               {sortedCompletedTasks.length > 0 && (
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
                     Completed ({sortedCompletedTasks.length})
                   </h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {sortedCompletedTasks.map((task, index) => (
                       <TaskCard 
                         key={task.id} 
@@ -263,33 +279,33 @@ function TaskCard({ task, index, getPriorityColor, onEdit, isCompleted = false }
 
   return (
     <Card 
-      className={`task-card p-6 animate-slide-up ${
+      className={`task-card p-4 sm:p-6 animate-slide-up ${
         isCompleted ? 'opacity-70' : ''
       } priority-${task.priority.toLowerCase()}`}
       style={{ animationDelay: `${index * 100}ms` }}
     >
-      <div className="flex items-start space-x-4">
+      <div className="flex items-start space-x-3 sm:space-x-4">
         <button
           onClick={handleToggleComplete}
-          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+          className={`w-5 sm:w-6 h-5 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
             isCompleted 
               ? 'bg-green-600 border-green-600' 
               : 'border-gray-300 hover:border-primary'
           }`}
         >
-          {isCompleted && <Check className="w-4 h-4 text-white" />}
+          {isCompleted && <Check className="w-3 sm:w-4 h-3 sm:h-4 text-white" />}
         </button>
         
-        <div className="flex-1">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className={`font-semibold ${
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between mb-2 gap-2">
+            <h3 className={`font-semibold text-sm sm:text-base ${
               isCompleted ? 'line-through text-gray-500' : 'text-gray-800'
-            }`}>
+            } break-words`}>
               {task.title}
             </h3>
             
-            <div className="flex items-center space-x-2">
-              <Badge className={getPriorityColor(task.priority)}>
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+              <Badge className={`${getPriorityColor(task.priority)} text-xs`}>
                 {task.priority}
               </Badge>
               
@@ -298,7 +314,7 @@ function TaskCard({ task, index, getPriorityColor, onEdit, isCompleted = false }
                   onClick={() => onEdit(task)}
                   className="p-1 text-gray-400 hover:text-primary transition-colors"
                 >
-                  <Edit className="w-4 h-4" />
+                  <Edit className="w-3 sm:w-4 h-3 sm:h-4" />
                 </button>
               )}
               
@@ -306,22 +322,22 @@ function TaskCard({ task, index, getPriorityColor, onEdit, isCompleted = false }
                 onClick={handleDelete}
                 className="p-1 text-gray-400 hover:text-red-500 transition-colors"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3 sm:w-4 h-3 sm:h-4" />
               </button>
             </div>
           </div>
           
           {task.description && (
-            <p className={`text-sm mb-3 ${
+            <p className={`text-xs sm:text-sm mb-3 ${
               isCompleted ? 'text-gray-400' : 'text-gray-600'
-            }`}>
+            } break-words`}>
               {task.description}
             </p>
           )}
 
           {task.dueDate && (
-            <div className="flex items-center text-sm text-gray-500">
-              <Calendar className="w-4 h-4 mr-1" />
+            <div className="flex items-center text-xs sm:text-sm text-gray-500">
+              <Calendar className="w-3 sm:w-4 h-3 sm:h-4 mr-1" />
               Due: {new Date(task.dueDate).toLocaleDateString()}
             </div>
           )}
