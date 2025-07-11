@@ -61,7 +61,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
                 <img 
-                  src="/lovable-uploads/0cebede7-411c-44f1-a1fa-8c5578b235f1.png" 
+                  src="/logo.png" 
                   alt="Detach Logo" 
                   className="w-full h-full object-contain"
                 />

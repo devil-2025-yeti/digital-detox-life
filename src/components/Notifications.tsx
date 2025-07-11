@@ -289,13 +289,13 @@ export function Notifications() {
                 <Target className="w-4 h-4 mr-2" />
                 Got it!
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 onClick={handleDismissTriggeredNotification}
                 className="w-full"
               >
                 Dismiss
-              </Button>
+              </Button> */}
             </div>
           </Card>
         </div>

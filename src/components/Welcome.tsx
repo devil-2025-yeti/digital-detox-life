@@ -14,11 +14,11 @@ export function Welcome() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="max-w-md w-full text-center animate-fade-in">
         <div className="mb-8">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full focus-gradient flex items-center justify-center animate-gentle-bounce">
+          <div className="w-30 h-30 mx-auto mb-6 flex items-center justify-center animate-gentle-bounce">
             <img 
-              src="/lovable-uploads/c2a19e91-9808-422f-83f9-1f1157bc4bdf.png" 
+              src="/logo.png" 
               alt="Detach Logo" 
-              className="w-12 h-12 object-contain"
+              className="w-20 h-20 object-contain"
             />
           </div>
           
