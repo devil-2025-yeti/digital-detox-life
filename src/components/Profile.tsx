@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -15,7 +14,7 @@ export function Profile() {
     name: state.user?.name || '',
     email: state.user?.email || '',
     focusArea: state.user?.focusArea || '',
-    goals: state.user?.goals || ''
+    goals: state.user?.goals?.join('\n') || ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -23,8 +22,9 @@ export function Profile() {
     dispatch({
       type: 'UPDATE_USER',
       payload: {
-        ...state.user,
-        ...formData
+        ...state.user!,
+        ...formData,
+        goals: formData.goals.split('\n').filter(goal => goal.trim() !== '')
       }
     });
     setIsEditing(false);
@@ -35,7 +35,7 @@ export function Profile() {
       name: state.user?.name || '',
       email: state.user?.email || '',
       focusArea: state.user?.focusArea || '',
-      goals: state.user?.goals || ''
+      goals: state.user?.goals?.join('\n') || ''
     });
     setIsEditing(false);
   };
@@ -117,7 +117,7 @@ export function Profile() {
                 value={formData.goals}
                 onChange={(e) => setFormData(prev => ({ ...prev, goals: e.target.value }))}
                 disabled={!isEditing}
-                placeholder="Share your goals and what you want to achieve..."
+                placeholder="Enter each goal on a new line..."
                 className={!isEditing ? "bg-gray-50" : ""}
                 rows={4}
               />
