@@ -15,32 +15,32 @@ export function ScreenTime() {
   const [screenTimeData, setScreenTimeData] = useState<ScreenTimeData[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<'current' | 'previous'>('current');
 
-  // Generate mock screen time data with realistic variations
+  // Generate more realistic screen time data
   useEffect(() => {
     const generateScreenTimeData = () => {
       const data: ScreenTimeData[] = [];
       const currentDate = new Date();
       
-      // Predefined realistic patterns for previous week (targeting 7-8 hrs average)
+      // More realistic patterns for previous week (higher usage with natural variations)
       const previousWeekPatterns = [
-        { total: 390, social: 150 }, // 6.5 hrs total, 2.5 hrs social (low day)
-        { total: 480, social: 200 }, // 8 hrs total, 3.3 hrs social (high day)
-        { total: 450, social: 180 }, // 7.5 hrs total, 3 hrs social (medium)
-        { total: 510, social: 220 }, // 8.5 hrs total, 3.7 hrs social (very high day)
-        { total: 420, social: 170 }, // 7 hrs total, 2.8 hrs social (medium)
-        { total: 495, social: 210 }, // 8.25 hrs total, 3.5 hrs social (high weekend)
-        { total: 465, social: 185 }  // 7.75 hrs total, 3.1 hrs social (weekend)
+        { total: 420, social: 165 }, // Monday - moderate start
+        { total: 465, social: 185 }, // Tuesday - busy day
+        { total: 490, social: 195 }, // Wednesday - peak usage
+        { total: 445, social: 175 }, // Thursday - slightly lower
+        { total: 510, social: 220 }, // Friday - high social usage
+        { total: 525, social: 205 }, // Saturday - weekend high
+        { total: 480, social: 190 }  // Sunday - still high but reducing
       ];
       
-      // Predefined realistic patterns for current week (targeting 3-4 hrs average)
+      // More realistic patterns for current week (improved but with natural variations)
       const currentWeekPatterns = [
-        { total: 195, social: 75 },  // 3.25 hrs total, 1.25 hrs social (low day)
-        { total: 240, social: 100 }, // 4 hrs total, 1.7 hrs social (high day)
-        { total: 210, social: 85 },  // 3.5 hrs total, 1.4 hrs social (medium)
-        { total: 180, social: 70 },  // 3 hrs total, 1.2 hrs social (very low day)
-        { total: 225, social: 90 },  // 3.75 hrs total, 1.5 hrs social (medium-high)
-        { total: 200, social: 80 },  // 3.3 hrs total, 1.3 hrs social (weekend)
-        { total: 215, social: 88 }   // 3.6 hrs total, 1.5 hrs social (weekend)
+        { total: 190, social: 70 },  // Monday - good start
+        { total: 220, social: 85 },  // Tuesday - slight increase
+        { total: 205, social: 78 },  // Wednesday - maintaining
+        { total: 235, social: 95 },  // Thursday - challenging day
+        { total: 195, social: 72 },  // Friday - good control
+        { total: 210, social: 80 },  // Saturday - weekend but controlled
+        { total: 215, social: 73 }   // Sunday (today) - current
       ];
       
       // Generate data for 14 days total
@@ -55,12 +55,12 @@ export function ScreenTime() {
           const patternIndex = 13 - i; // 0-6 for previous week
           const pattern = previousWeekPatterns[patternIndex];
           
-          // Add small random variation (±10 minutes) to make it more natural
-          const totalVariation = Math.floor(Math.random() * 21) - 10; // -10 to +10
-          const socialVariation = Math.floor(Math.random() * 11) - 5; // -5 to +5
+          // Add realistic random variation (±15 minutes for total, ±8 for social)
+          const totalVariation = Math.floor(Math.random() * 31) - 15; // -15 to +15
+          const socialVariation = Math.floor(Math.random() * 17) - 8; // -8 to +8
           
-          const totalUsage = Math.max(300, pattern.total + totalVariation); // Minimum 5 hours
-          const socialMediaUsage = Math.max(60, Math.min(totalUsage * 0.5, pattern.social + socialVariation)); // Max 50% of total
+          const totalUsage = Math.max(360, pattern.total + totalVariation); // Min 6 hours
+          const socialMediaUsage = Math.max(120, Math.min(totalUsage * 0.45, pattern.social + socialVariation));
           
           data.push({
             date: date.toISOString().split('T')[0],
@@ -71,12 +71,12 @@ export function ScreenTime() {
           const patternIndex = 6 - i; // 0-6 for current week
           const pattern = currentWeekPatterns[patternIndex];
           
-          // Add small random variation (±5 minutes) to make it more natural
-          const totalVariation = Math.floor(Math.random() * 11) - 5; // -5 to +5
-          const socialVariation = Math.floor(Math.random() * 6) - 3; // -3 to +3
+          // Add smaller realistic variation (±10 minutes for total, ±5 for social)
+          const totalVariation = Math.floor(Math.random() * 21) - 10; // -10 to +10
+          const socialVariation = Math.floor(Math.random() * 11) - 5; // -5 to +5
           
-          const totalUsage = Math.max(150, pattern.total + totalVariation); // Minimum 2.5 hours
-          const socialMediaUsage = Math.max(30, Math.min(totalUsage * 0.5, pattern.social + socialVariation)); // Max 50% of total
+          const totalUsage = Math.max(150, pattern.total + totalVariation); // Min 2.5 hours
+          const socialMediaUsage = Math.max(45, Math.min(totalUsage * 0.45, pattern.social + socialVariation));
           
           data.push({
             date: date.toISOString().split('T')[0],
@@ -106,8 +106,8 @@ export function ScreenTime() {
 
   const getTodayData = () => {
     const today = getCurrentWeekData()[6]; // Last item is today
-    // Override today's social media usage to be exactly 1 hr 13 m (73 minutes)
-    return today ? { ...today, socialMediaUsage: 73 } : { date: '', totalUsage: 0, socialMediaUsage: 73 };
+    // Today's realistic usage - meeting targets
+    return today ? { ...today, totalUsage: 215, socialMediaUsage: 73 } : { date: '', totalUsage: 215, socialMediaUsage: 73 };
   };
 
   const getWeeklyAverage = (data: ScreenTimeData[]) => {
@@ -130,7 +130,7 @@ export function ScreenTime() {
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return hours > 0 ? `${hours} hr ${mins} m` : `${mins} m`;
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
 
   const getMaxUsage = (data: ScreenTimeData[]) => {
