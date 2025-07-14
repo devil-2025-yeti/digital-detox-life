@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,9 +29,9 @@ export function ScreenTime() {
         const isPreviousWeek = i >= 7;
         
         if (isPreviousWeek) {
-          // Previous week: 7-8 hours total, 4-5 hours social media
+          // Previous week: 7-8 hours total (420-480 minutes), 3-4 hours social media (180-240 minutes)
           const totalUsage = Math.floor(Math.random() * 60) + 420; // 420-480 minutes (7-8 hours)
-          const socialMediaUsage = Math.floor(Math.random() * 60) + 240; // 240-300 minutes (4-5 hours)
+          const socialMediaUsage = Math.floor(Math.random() * 60) + 180; // 180-240 minutes (3-4 hours)
           
           data.push({
             date: date.toISOString().split('T')[0],
@@ -40,9 +39,9 @@ export function ScreenTime() {
             socialMediaUsage
           });
         } else {
-          // Current week: 4-5 hours total, 2-3 hours social media
-          const totalUsage = Math.floor(Math.random() * 60) + 240; // 240-300 minutes (4-5 hours)
-          const socialMediaUsage = Math.floor(Math.random() * 60) + 120; // 120-180 minutes (2-3 hours)
+          // Current week: 3.5-4 hours total (210-240 minutes), 1.5-2 hours social media (90-120 minutes)
+          const totalUsage = Math.floor(Math.random() * 30) + 210; // 210-240 minutes (3.5-4 hours)
+          const socialMediaUsage = Math.floor(Math.random() * 30) + 90; // 90-120 minutes (1.5-2 hours)
           
           data.push({
             date: date.toISOString().split('T')[0],
