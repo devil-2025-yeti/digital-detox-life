@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Check, Edit, Trash2, Calendar, Quote, Menu, TrendingDown } from 'lucide-react';
+import { Plus, Check, Edit, Trash2, Calendar, Quote, Menu } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { getMotivationalQuote } from '@/utils/aiTaskGenerator';
 import { AddTaskDialog } from './AddTaskDialog';
@@ -253,43 +253,6 @@ export function Dashboard() {
 
             {/* 5. Focus Streak Challenge */}
             <FocusStreakChallenge />
-
-            {/* 6. Amazing Progress Section */}
-            <Card className="p-6 glass-effect bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-              <div className="text-center space-y-4">
-                <div className="flex items-center justify-center space-x-2 mb-4">
-                  <TrendingDown className="w-6 h-6 text-green-600" />
-                  <h3 className="text-xl font-semibold text-gray-800">Amazing Progress! 🎉</h3>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white/50 rounded-lg p-4">
-                    <div className="text-2xl font-bold text-green-600 mb-1">-52%</div>
-                    <p className="text-sm text-gray-600">Total Screen Time Reduced</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      From 7h 30m to 3h 36m daily
-                    </p>
-                  </div>
-                  <div className="bg-white/50 rounded-lg p-4">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">-59%</div>
-                    <p className="text-sm text-gray-600">Social Media Time Reduced</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      From 3h 3m to 1h 15m daily
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-white/70 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-3">Keep it up! 🚀</h4>
-                  <p className="text-gray-700 leading-relaxed">
-                    You're focusing more on your goals. Your discipline is paying off! 💪✨
-                  </p>
-                  <p className="text-sm text-gray-600 mt-3 italic">
-                    "Small efforts daily lead to success." 🌟
-                  </p>
-                </div>
-              </div>
-            </Card>
           </div>
         </div>
       </div>
