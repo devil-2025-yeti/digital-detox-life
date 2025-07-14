@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -305,11 +304,10 @@ export function ScreenTime() {
           <div className="bg-white/70 rounded-lg p-6">
             <h4 className="text-lg font-semibold text-gray-800 mb-3">Keep it up! 🚀</h4>
             <p className="text-gray-700 leading-relaxed">
-              You're focusing more on your goals than on social media. Your discipline is paying off! 
-              This new version of you is truly impressive. You're unstoppable! 💪✨
+              You're focusing more on your goals. Your discipline is paying off! 💪✨
             </p>
             <p className="text-sm text-gray-600 mt-3 italic">
-              "Success is the sum of small efforts, repeated day in and day out." - You're living proof! 🌟
+              "Small efforts daily lead to success." 🌟
             </p>
           </div>
         </div>

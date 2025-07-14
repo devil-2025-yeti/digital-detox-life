@@ -162,7 +162,7 @@ export function Dashboard() {
 
         <div className="p-3 sm:p-6 pb-20">
           <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
-            {/* Progress Overview */}
+            {/* 1. Progress Overview */}
             <Card className="p-4 sm:p-6 glass-effect">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Your Progress</h2>
@@ -189,7 +189,72 @@ export function Dashboard() {
               </div>
             </Card>
 
-            {/* Progress Comparison & Encouraging Message */}
+            {/* 2. Add Task Button */}
+            <div>
+              <Button
+                onClick={() => setShowAddTask(true)}
+                className="w-full rounded-2xl py-4 sm:py-6 bg-gradient-to-r from-primary to-tree-600 hover:from-primary/90 hover:to-tree-700 transition-all duration-300 text-sm sm:text-base"
+              >
+                <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                Add New Task
+              </Button>
+            </div>
+
+            <div id="tasks-section">
+              {/* 3. Focus Areas (Pending Tasks) */}
+              {sortedPendingTasks.length > 0 && (
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
+                    Focus Areas ({sortedPendingTasks.length})
+                  </h3>
+                  
+                  <div className="space-y-3 sm:space-y-4">
+                    {sortedPendingTasks.map((task, index) => (
+                      <TaskCard 
+                        key={task.id} 
+                        task={task} 
+                        index={index}
+                        getPriorityColor={getPriorityColor}
+                        onEdit={handleEditTask}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Completed Tasks (if any exist) */}
+              {sortedCompletedTasks.length > 0 && (
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
+                    Completed ({sortedCompletedTasks.length})
+                  </h3>
+                  
+                  <div className="space-y-3 sm:space-y-4">
+                    {sortedCompletedTasks.map((task, index) => (
+                      <TaskCard 
+                        key={task.id} 
+                        task={task} 
+                        index={index}
+                        getPriorityColor={getPriorityColor}
+                        onEdit={handleEditTask}
+                        isCompleted
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 4. Screen Time Section */}
+            <div>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Screen Time</h2>
+              <ScreenTime />
+            </div>
+
+            {/* 5. Focus Streak Challenge */}
+            <FocusStreakChallenge />
+
+            {/* 6. Amazing Progress Section */}
             <Card className="p-6 glass-effect bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
               <div className="text-center space-y-4">
                 <div className="flex items-center justify-center space-x-2 mb-4">
@@ -217,80 +282,14 @@ export function Dashboard() {
                 <div className="bg-white/70 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-gray-800 mb-3">Keep it up! 🚀</h4>
                   <p className="text-gray-700 leading-relaxed">
-                    You're focusing more on your goals than on social media. Your discipline is paying off! 
-                    This new version of you is truly impressive. You're unstoppable! 💪✨
+                    You're focusing more on your goals. Your discipline is paying off! 💪✨
                   </p>
                   <p className="text-sm text-gray-600 mt-3 italic">
-                    "Success is the sum of small efforts, repeated day in and day out." - You're living proof! 🌟
+                    "Small efforts daily lead to success." 🌟
                   </p>
                 </div>
               </div>
             </Card>
-
-            {/* Focus Streak Challenge - NEW ADDITION */}
-            <FocusStreakChallenge />
-
-            {/* Add Task Button */}
-            <div>
-              <Button
-                onClick={() => setShowAddTask(true)}
-                className="w-full rounded-2xl py-4 sm:py-6 bg-gradient-to-r from-primary to-tree-600 hover:from-primary/90 hover:to-tree-700 transition-all duration-300 text-sm sm:text-base"
-              >
-                <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
-                Add New Task
-              </Button>
-            </div>
-
-            <div id="tasks-section">
-              {/* Pending Tasks */}
-              {sortedPendingTasks.length > 0 && (
-                <div className="mb-6 sm:mb-8">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
-                    Focus Areas ({sortedPendingTasks.length})
-                  </h3>
-                  
-                  <div className="space-y-3 sm:space-y-4">
-                    {sortedPendingTasks.map((task, index) => (
-                      <TaskCard 
-                        key={task.id} 
-                        task={task} 
-                        index={index}
-                        getPriorityColor={getPriorityColor}
-                        onEdit={handleEditTask}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Completed Tasks */}
-              {sortedCompletedTasks.length > 0 && (
-                <div className="mb-6 sm:mb-8">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
-                    Completed ({sortedCompletedTasks.length})
-                  </h3>
-                  
-                  <div className="space-y-3 sm:space-y-4">
-                    {sortedCompletedTasks.map((task, index) => (
-                      <TaskCard 
-                        key={task.id} 
-                        task={task} 
-                        index={index}
-                        getPriorityColor={getPriorityColor}
-                        onEdit={handleEditTask}
-                        isCompleted
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Screen Time Section - moved below completed tasks */}
-              <div>
-                <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Screen Time</h2>
-                <ScreenTime />
-              </div>
-            </div>
           </div>
         </div>
       </div>
